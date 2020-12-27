@@ -17,11 +17,11 @@ sxiv -rqot * > TEMP
    if [ "$(wc -l < TEMP)" == 1 ]; then
     sxiv -rqot * >> TEMP
     mv TEMP .background
-    $HOME/.script/wallpaper.sh draw
+    $HOME/.scripts/wallpaper.sh draw
    fi
    if [ "$(wc -l < TEMP)" == 2 ]; then
       mv TEMP .background
-      $HOME/.script/wallpaper.sh draw
+      $HOME/.scripts/wallpaper.sh draw
    fi
 
 fi

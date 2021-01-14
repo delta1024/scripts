@@ -1,22 +1,24 @@
 #!/bin/env bash
 args="Youtube
-Gmail
+Just Cause 3
 ArchWiki
 Youtube Music"
 prompt=$(echo -e "${args[@]}" | dmenu -i -p 'Site: ')
 
-if [ "$prompt" == 'Youtube' ]; then
-	exec brave youtube.com
-fi
-
-if [ "$prompt" == 'Gmail' ]; then
-	exec brave mail.google.com
-fi
-
-if [ "$prompt" == 'ArchWiki' ]; then
-	exec brave wiki.archlinux.org
-fi
-
-if [ "$prompt" == 'Youtube Music' ]; then
-brave music.youtube.com
+case $prompt in
+    Youtube)
+        url=youtube.com
+        ;;
+    'Just Cause 3')
+        url=https://www.youtube.com/playlist?list=PL4Sz7_l-PtwBmvH_QivBJs3eD21Zqj6Lv
+        ;;
+    ArchWiki)
+        url=wiki.archlinux.org
+        ;;
+    'Youtube Music')
+        url=music.youtube.com
+        ;;
+esac
+if [ "$url" == $url ]; then
+    brave "$url"
 fi

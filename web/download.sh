@@ -1,5 +1,5 @@
 #!/bin/env bash
-options="video\nmusic"
+options="video\nNo Playlist Video\nmusic"
 args=$(echo -e ${options} | sort)
 prompt=$(echo -e "${args[@]}" | dmenu -i -p 'File:')
 case "$prompt" in
@@ -8,7 +8,11 @@ case "$prompt" in
 	    url=$(xclip -o)
 	    youtube-dl $url
 ;;
-    music)
+    'No Playlist Video')
+        cd $HOME/Videos/
+        url=$(xclip -o)
+        youtube-dl --no-playlist $url
+        music)
      cd $HOME/Music/
 	 url=$(xclip -o)
 	 youtube-dl -x $url

@@ -1,0 +1,16 @@
+#!/bin/sh
+FILES="test\nfile.txt"
+case $1 in
+	start) echo -e "${FILES[@]}" | sort | entr ##COMMAND GOES HERE##
+	;;
+	edit) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
+/g;/echo/,$d;s/FILES="//;s/"//' tracker > temp && vim temp &&
+#Pick a file that will always be on the end of your list and replace file.txt with the file name (not it's path) and be sure to leave the " at the end of the substitution
+	send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
+echo $send > temp && sed "2d" tracker > temp2 
+sed '1r temp' temp2 > temp3 
+rm temp temp2 
+chmod +x temp3
+mv temp3 tracker
+	;;
+esac

@@ -1,18 +1,18 @@
 #!/bin/sh
-FILES="file.txt"
-case $1 in
-	start) pgrep entr > /dev/null && killall entr; echo -e "${FILES[@]}" | sort | entr ##COMMAND GOES HERE##
-	;;
-	edit) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' tracker > temp && vim temp &&
-#Pick a file that will always be on the end of your list and replace file.txt with the file name (not it's path) and be sure to leave the " at the end of the substitution
-	send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
-echo $send > temp && sed "2d" tracker > temp2 
-sed '1r temp' temp2 > temp3 
-rm temp temp2 
-chmod +x temp3
-mv temp3 tracker
-pgrep entr > /dev/null && ./tracker start || exit
-	;;
-stop) killall entr;;
-esac
+initial_dir=`pwd`
+test "$initial_dir/.tracker" && case $1 in
+
+#start
+	s) sh "$initial_dir/.tracker" s ;;
+#edit
+	e) sh "$initial_dir/.tracker" e ;;
+#List Files
+	l) sh "$initial_dir/.tracker" l ;;
+#stop entr
+	x) sh "$initial_dir/.tracker" x ;;
+#generate pdf
+	g) sh "$initial_dir/.tracker" g ;;
+#initiate file tracking
+esac || 
+echo "no tracker file exists please crate one with the i option"
+

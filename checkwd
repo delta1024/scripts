@@ -1,0 +1,6 @@
+#!/bin/sh
+called_dir=`pwd`
+echo "$called_dir"
+cd $HOME
+pwd
+echo "$called_dir"

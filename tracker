@@ -5,14 +5,15 @@ echo "Tracker: a small script for managing file lists for entr"
 echo
 echo "Usage: [-s -e -l -x -g -h -r] [-i <file name minus the .mom extention>]"
 echo "options:"
-echo "	s		Start tracking files with entr"
-echo "	e		Eidit .tracker file in current directory name master .mom" 
-echo "	l 		List tracked files"
-echo "	x 		Kill any actave entr processes"
-echo "	g 		Generate a pdf from data in .tracker file"
-echo "	r		Remove .tracker file from current directory"
-echo "	h 		Prints this message"
-echo "	i 		Initialise directory by copying a .tracker file and seting main file to track"
+echo "	-s		Start tracking files with entr"
+echo "	-e		Eidit .tracker file in current directory name master .mom" 
+echo "	-l 		List tracked files"
+echo "	-x 		Kill any actave entr processes"
+echo "	-g 		Generate a pdf from data in .tracker file"
+echo "	-t		Generate a pdf without surpressing output"
+echo "	-r		Remove .tracker file from current directory"
+echo "	-h 		Prints this message"
+echo "	-i 		Initialise directory by copying a .tracker file and seting main file to track"
 echo
 echo "	Note:		When you initialise the script the file you used for the name must be last on the list when exiting the edit command or the script will break"
 echo
@@ -20,16 +21,18 @@ echo
 add_module () {
 #echo "what module do you want to add"
 #echo "1) pdfmom"
+#echo "2) pdflatex"
 #read modanswer
 modanswer=1
 case $modanswer in
 	1) cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && sh .tracker i $name ;;
+#	2) cp $HOME/.scripts/tracker\ modules/pdflatex ./.tracker && sh .tracker i $name ;;
 esac
 }
 no_tracker_file_error () {
 echo "no .tracker file existes in the current directory. Please create one with the -i option followed by the name of the file to track"
 }
-while getopts "hrselxgi:" arg; do
+while getopts "hrselxgti:" arg; do
 case $arg in
 #start tracker
 	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || no_tracker_file_error;;
@@ -41,6 +44,8 @@ case $arg in
 	x) killall entr ;;
 #generate pdf
 	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || no_tracker_file_error ;;
+#Generate troubleshooting pdf
+	t) [ -e .tracker ] && sh "$initial_dir/.tracker" t || no_tracker_file_error ;;
 #initiate file tracking
 	i) name=${OPTARG}; [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option" || if [ -e "$name" ]; then
 	add_module

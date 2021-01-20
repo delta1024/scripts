@@ -3,34 +3,37 @@ initial_dir=`pwd`
 usage () {
 echo "Tracker: a small script for managing file lists for entr"
 echo
-echo "Usage: [-s] [-e] [-l] [-x] [-g] [-i <file name minus the .mom extention>] [-r] [-h]"
+echo "Usage: [-s -e -l -x -g -h -r] [-i <file name minus the .mom extention>]"
 echo "options:"
 echo "	s		Start tracking files with entr"
 echo "	e		Eidit .tracker file in current directory name master .mom" 
 echo "	l 		List tracked files"
 echo "	x 		Kill any actave entr processes"
 echo "	g 		Generate a pdf from data in .tracker file"
+echo "	r		Remove .tracker file from current directory"
+echo "	h 		Prints this message"
 echo "	i 		Initialise directory by copying a .tracker file and seting main file to track"
 echo
 echo "	Note:		When you initialise the script the file you used for the name must be last on the list when exiting the edit command or the script will break"
 echo
-echo "	r		Remove .tracker file from current directory"
-echo "	h 		Prints this message"
+}
+no_tracker_file_error () {
+echo "no .tracker file existes in the current directory. Please create one with the -i option followed by the name of the file to track"
 }
 while getopts "hrselxgi:" arg; do
 case $arg in
 #start tracker
-	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
+	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || no_tracker_file_error;;
 #Edit tracker
-	e) [ -e .tracker ] && sh "$initial_dir/.tracker" e || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
+	e) [ -e .tracker ] && sh "$initial_dir/.tracker" e || no_tracker_file_error;;
 #List Files
-	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
+	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || no_tracker_file_error;;
 #stop entr
 	x) sh $HOME/.scripts/.tracker x ;;
 #generate pdf
-	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || echo "no .tracker file existes in the current directory. Please create one with the i option followed by the name of the file to track" ;;
+	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || no_tracker_file_error ;;
 #initiate file tracking
-	i) name=${OPTARG}; [ -e .tracker ] && echo "file already exists" || if [ -e "$name.mom" ]; then
+	i) name=${OPTARG}; [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option" || if [ -e "$name" ]; then
        cp $HOME/.scripts/.tracker ./.tracker && sh .tracker i $name 
 else
        echo "no such file exists" 

@@ -23,5 +23,5 @@ case $1 in
 #generate pdf
 	g) pdfmom file.txt > file.pdf 2> /dev/null ;;
 #initiate file tracking
-i) [ -e "$2.mom" ] &&  sed "/#initiate/d;s/file.txt/$2.mom/g;s/file.pdf/$2.pdf/" .tracker > temp  && mv temp .tracker && sh .tracker e || echo "file does not exist";;
+i) [ -e "$2" ] && pdfname=$(printf $2 | cut -d'.' -f1); sed "/#initiate/d;s/file.txt/$2/g;s/file.pdf/$pdfname.pdf/" .tracker > temp  && mv temp .tracker && sh .tracker e || echo "file does not exist";;
 esac

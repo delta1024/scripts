@@ -17,6 +17,15 @@ echo
 echo "	Note:		When you initialise the script the file you used for the name must be last on the list when exiting the edit command or the script will break"
 echo
 }
+add_module () {
+#echo "what module do you want to add"
+#echo "1) pdfmom"
+#read modanswer
+modanswer=1
+case $modanswer in
+	1) cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && sh .tracker i $name ;;
+esac
+}
 no_tracker_file_error () {
 echo "no .tracker file existes in the current directory. Please create one with the -i option followed by the name of the file to track"
 }
@@ -29,12 +38,12 @@ case $arg in
 #List Files
 	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || no_tracker_file_error;;
 #stop entr
-	x) sh $HOME/.scripts/.tracker x ;;
+	x) killall entr ;;
 #generate pdf
 	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || no_tracker_file_error ;;
 #initiate file tracking
 	i) name=${OPTARG}; [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option" || if [ -e "$name" ]; then
-       cp $HOME/.scripts/.tracker ./.tracker && sh .tracker i $name 
+	add_module
 else
        echo "no such file exists" 
 	fi ;;

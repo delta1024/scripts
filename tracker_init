@@ -1,3 +1,0 @@
-#!/bin/bash
-init_dir=`pwd`
-[ -e .tracker ] && echo "no" || cp $HOME/.scripts/.tracker ./.tracker && sh .tracker i $1 

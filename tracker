@@ -1,18 +1,48 @@
 #!/bin/sh
 initial_dir=`pwd`
-test "$initial_dir/.tracker" && case $1 in
-
-#start
-	s) sh "$initial_dir/.tracker" s ;;
-#edit
-	e) sh "$initial_dir/.tracker" e ;;
+usage () {
+echo "Tracker: a small script for managing file lists for entr"
+echo
+echo "Usage: [-s] [-e] [-l] [-x] [-g] [-i <file name minus the .mom extention>] [-r] [-h]"
+echo "options:"
+echo "	s		Start tracking files with entr"
+echo "	e		Eidit .tracker file in current directory name master .mom" 
+echo "	l 		List tracked files"
+echo "	x 		Kill any actave entr processes"
+echo "	g 		Generate a pdf from data in .tracker file"
+echo "	i 		Initialise directory by copying a .tracker file and seting main file to track"
+echo
+echo "	Note:		When you initialise the script the file you used for the name must be last on the list when exiting the edit command or the script will break"
+echo
+echo "	r		Remove .tracker file from current directory"
+echo "	h 		Prints this message"
+}
+while getopts "hrselxgi:" arg; do
+case $arg in
+#start tracker
+	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
+#Edit tracker
+	e) [ -e .tracker ] && sh "$initial_dir/.tracker" e || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
 #List Files
-	l) sh "$initial_dir/.tracker" l ;;
+	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || echo "no .tracker file existes in the current directory. please create one with the i option followed by the name of the file to track" ;;
 #stop entr
-	x) sh "$initial_dir/.tracker" x ;;
+	x) sh $HOME/.scripts/.tracker x ;;
 #generate pdf
-	g) sh "$initial_dir/.tracker" g ;;
+	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || echo "no .tracker file existes in the current directory. Please create one with the i option followed by the name of the file to track" ;;
 #initiate file tracking
-esac || 
-echo "no tracker file exists please crate one with the i option"
+	i) name=${OPTARG}; [ -e .tracker ] && echo "file already exists" || if [ -e "$name.mom" ]; then
+       cp $HOME/.scripts/.tracker ./.tracker && sh .tracker i $name 
+else
+       echo "no such file exists" 
+	fi ;;
+	r) [ -e .tracker ] && echo "remove .tracker file in current directory y/n"&& read answer &&
+	       	if [[ $answer == "y" ]]; then
+		       	rm .tracker; 
+		else
+		       	exit 0
+		fi || echo "no .tracker file in current dir"
+		;;
+	h | *) usage; exit 0;; 
+esac  
+done
 

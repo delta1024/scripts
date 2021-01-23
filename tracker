@@ -3,19 +3,23 @@ initial_dir=`pwd`
 usage () {
 echo "Tracker: a small script for managing file lists for entr"
 echo
-echo "Usage: [-s -e -l -x -g -h -r] [-i <file name minus the .mom extention>]"
+echo "Usage: [-s -a -e -l -x -g -t -r -I -R -E  -i -h ]"
 echo "options:"
 echo "	-s		Start tracking files with entr"
+echo "	-a		Add a path to the clipboard and open editor mode for easy tracking"
 echo "	-e		Eidit .tracker file in current directory name master .mom" 
 echo "	-l 		List tracked files"
 echo "	-x 		Kill any actave entr processes"
 echo "	-g 		Generate a pdf from data in .tracker file"
 echo "	-t		Generate a pdf without surpressing output"
 echo "	-r		Remove .tracker file from current directory"
+echo "	-I		Import file list"
+echo "	-R		remove backup file from current directory"
+echo "	-E		Export file list"
+echo "	-i 		Initialise directory by copying a .tracker module  and seting main file to track"
 echo "	-h 		Prints this message"
-echo "	-i 		Initialise directory by copying a .tracker file and seting main file to track"
 echo
-echo "	Note:		When you initialise the script the file you used for the name must be last on the list when exiting the edit command or the script will break"
+echo "	Note:		When you initialise the script, the file you want to track must remain on the bottom of the tracking list or the script will break"
 echo
 }
 add_module () {
@@ -25,19 +29,21 @@ add_module () {
 #read modanswer
 modanswer=1
 case $modanswer in
-	1) cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && sh .tracker i $name ;;
+	1) cp $HOME/.scripts/test/.tracker ./.tracker && sh .tracker i ;;
 #	2) cp $HOME/.scripts/tracker\ modules/pdflatex ./.tracker && sh .tracker i $name ;;
 esac
 }
 no_tracker_file_error () {
-echo "no .tracker file existes in the current directory. Please create one with the -i option followed by the name of the file to track"
+echo "no .tracker file existes in the current directory. Please create one with the -i <file> option"
 }
-while getopts "hrselxgti:" arg; do
+while getopts "saelxtgEIRirvh" arg; do
 case $arg in
 #start tracker
 	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || no_tracker_file_error;;
 #Edit tracker
 	e) [ -e .tracker ] && sh "$initial_dir/.tracker" e || no_tracker_file_error;;
+#Add Directory
+	a) [ -e .tracker ] && sh "$initial_dir/.tracker" a || no_tracker_file_error ;;
 #List Files
 	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || no_tracker_file_error;;
 #stop entr
@@ -46,19 +52,29 @@ case $arg in
 	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || no_tracker_file_error ;;
 #Generate troubleshooting pdf
 	t) [ -e .tracker ] && sh "$initial_dir/.tracker" t || no_tracker_file_error ;;
-#initiate file tracking
-	i) name=${OPTARG}; [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option" || if [ -e "$name" ]; then
-	add_module
+#Export file list
+	E) [ -e .tracker ] && sh "$initial_dir/.tracker" E || no_tracker_file_error ;; 
+#Import file list
+## Modify import so it'll auto gen base file
+	I) [ -e backuptr  ] && sh "$initial_dir/.tracker" I || echo "No backuptr file existes in current directory" ;;
+#Remove Backup file
+	R) [ -e backuptr ] && echo "delete backup file? y/n" && read answer && 
+if [[ $answer == "y" ]]; then
+	rm backuptr
 else
-       echo "no such file exists" 
-	fi ;;
+	exit 0
+	fi 
+	;;
+#initiate file tracking
+	i) [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option or the -E opiton to export it's contents" || add_module;;
 	r) [ -e .tracker ] && echo "remove .tracker file in current directory y/n"&& read answer &&
 	       	if [[ $answer == "y" ]]; then
 		       	rm .tracker; 
 		else
 		       	exit 0
-		fi || echo "no .tracker file in current dir"
+		fi
 		;;
+	v) [ -e .tracker  ] && sh "$initial_dir/.tracker" v || no_tracker_file_error ;;
 	h | *) usage; exit 0;; 
 esac  
 done

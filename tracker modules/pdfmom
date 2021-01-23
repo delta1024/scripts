@@ -1,58 +1,15 @@
 #!/bin/sh
-FILES="file.txt"
+MODULE="pdfmom"
+. ~/.scripts/lib/libtracker
 case $1 in
-#start
-	s) pgrep entr > /dev/null && killall entr;  echo -e "${FILES[@]}" | sort | entr pdfmom file.txt > file.pdf 2> /dev/null &
-	;;
-#Add file
-	a)
-	read usrinput
-	sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' .tracker > temp && echo $usrinput >> temp && vim temp &&
-		send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
-		echo $send > temp && sed "2d" .tracker > temp2 
-		sed '1r temp' temp2 > temp3 
-		rm temp temp2 
-		mv temp3 .tracker
-		pgrep entr > /dev/null && ./.tracker s || pdfmom file.txt > file.pdf 2> /dev/null 
-	;;
-#edit
-	e) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' .tracker > temp && vim temp &&
-		send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
-		echo $send > temp && sed "2d" .tracker > temp2 
-		sed '1r temp' temp2 > temp3 
-		rm temp temp2 
-		mv temp3 .tracker
-		pgrep entr > /dev/null && ./.tracker s || pdfmom file.txt > file.pdf 2> /dev/null 
-	;;
-#List files
-	l) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' .tracker;;
-#generate pdf
-	g) pdfmom file.txt > file.pdf 2> /dev/null ;;
-#Generate pdf with out surpressing output
-	t) pdfmom file.txt > file.pdf ;;
-#import file list
-	I) cp backuptr temp  && send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
-		echo $send > temp && sed "2d" .tracker > temp2 
-		sed '1r temp' temp2 > temp3 
-		rm temp temp2 
-		mv temp3 .tracker
-		sh .tracker l
-	;;
-#export file list
-	E) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' .tracker > backuptr && cat backuptr
-	;;
-	U) sed 's/#.*//;/^$/d;/^case/,$d;s/\\n/\
-/g;/echo/,$d;s/FILES="//;s/"//' .tracker > temp && cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && send=$(sed 's/file.txt/file.txt"/' temp | awk '{printf "%s\\n", $0}' | sed 's/"\\n/"/;s/^/FILES="/') &&
-		echo $send > temp && sed "2d" .tracker > temp2 
-		sed '1r temp' temp2 > temp3 
-		rm temp temp2 
-		mv temp3 .tracker
-		sh .tracker l
-	;;
-#initiate file tracking
-	i) [ -e "$2" ] && pdfname=$(printf $2 | cut -d'.' -f1); sed "/#initiate/d;s/file.txt/$2/g;s/file.pdf/$pdfname.pdf/" .tracker > temp  && mv temp .tracker && sh .tracker e || echo "file does not exist";;
+	s) entr_start_pdfmom;;
+	a) append_tracked_files;;
+	e) edit_tracked_files;;
+	l) list_tracked_files;;
+	t) gen_pdf_pdfmom;;
+	g) gen_pdf_pdfmom_no_error;;
+	E) export_tracked_files;;
+	I) import_tracked_files;;
+	i) initialise_tracker;;
+	v) echo $MODULE
 esac

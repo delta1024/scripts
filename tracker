@@ -29,7 +29,7 @@ add_module () {
 #read modanswer
 modanswer=1
 case $modanswer in
-	1) cp $HOME/.scripts/test/.tracker ./.tracker && sh .tracker i ;;
+	1) cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && sh .tracker i ;;
 #	2) cp $HOME/.scripts/tracker\ modules/pdflatex ./.tracker && sh .tracker i $name ;;
 esac
 }

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+SINKS=$(pactl list sinks | grep "Sink #" | wc -l)
+HEADPHONES=$(pactl list sinks | grep "Sink #" | cut -d"#" -f2 | sed "1d;2d")
+SPEAKERS=$(pactl list sinks | grep "Sink #" | cut -d "#" -f2 | sed "1d;3d")
+
+case $SINKS in
+    2) sink=$SPEAKERS;;
+    3) sink=$HEADPHONES;;
+esac
+case $1 in
+        up) pactl set-sink-volume "${sink}" +5%;;
+      down) pactl set-sink-volume "${sink}" -5%;;
+      mute) pactl set-sink-mute "${sink}" toggle;;
+esac

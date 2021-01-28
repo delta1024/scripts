@@ -1,0 +1,10 @@
+#!/bin/sh
+CONFIG=$HOME/.config/suckless/dwm/README.org
+BINDINGS=$HOME/.config/sxhkd/sxhkdrc
+args="Config\nBindings"
+prompt=$(echo -e "${args[@]}" | dmenu -l 2 -i -p 'Config:')
+
+case $prompt in
+	Config) exec emacsclient -c "$CONFIG";;
+	Bindings) exec emacsclient -c "$BINDINGS";;
+esac

@@ -1,8 +1,10 @@
 #!/bin/env bash
-args="Groff Folder\nWritting Folder"
+args="BLUEPRINT\nsrc\nconfig\nscripts"
 argsNum=$(echo -e "${args[@]}" | wc -l)
 prompt=$(echo -e "${args[@]}" | dmenu -l "$argsNum" -i -p 'Where to?')
 case $prompt in
-    "Groff Folder") alacritty -e lf $HOME/Documents/groff ;;
-    "Writting Folder") alacritty -e lf $HOME/Documents/Writing ;;
+    "src") alacritty -e lf $HOME/.src ;;
+    "BLUEPRINT") alacritty -e lf $HOME/Documents/Writing/Archive\ of\ Solaris/BLUEPRINT ;;
+    "config") alacritty -e lf $HOME/.config;;
+    "scripts") alacritty -e lf $HOME/.scripts;;
 esac

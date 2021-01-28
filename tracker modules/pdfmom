@@ -1,15 +1,1 @@
-#!/bin/sh
 MODULE="pdfmom"
-. ~/.scripts/lib/libtracker
-case $1 in
-	s) entr_start_pdfmom;;
-	a) append_tracked_files;;
-	e) edit_tracked_files;;
-	l) list_tracked_files;;
-	t) gen_pdf_pdfmom;;
-	g) gen_pdf_pdfmom_no_error;;
-	E) export_tracked_files;;
-	I) import_tracked_files;;
-	i) initialise_tracker;;
-	v) echo $MODULE
-esac

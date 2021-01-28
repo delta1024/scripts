@@ -1,81 +1,157 @@
 #!/bin/sh
-initial_dir=`pwd`
+initdir=`pwd`
 usage () {
 echo "Tracker: a small script for managing file lists for entr"
 echo
-echo "Usage: [-s -a -e -l -x -g -t -r -I -R -E  -i -h ]"
+echo "Usage: [-s  -S -a  -A -e -l -x -g -G -r -I -R -E  -h ] [ -i <master.file> ]"
 echo "options:"
-echo "	-s		Start tracking files with entr"
-echo "	-a		Add a path to the clipboard and open editor mode for easy tracking"
-echo "	-e		Eidit .tracker file in current directory name master .mom" 
-echo "	-l 		List tracked files"
-echo "	-x 		Kill any actave entr processes"
-echo "	-g 		Generate a pdf from data in .tracker file"
-echo "	-t		Generate a pdf without surpressing output"
-echo "	-r		Remove .tracker file from current directory"
-echo "	-I		Import file list"
-echo "	-R		remove backup file from current directory"
-echo "	-E		Export file list"
-echo "	-i 		Initialise directory by copying a .tracker module  and seting main file to track"
-echo "	-h 		Prints this message"
+echo "	-s	Start tracking files with entr; supresses error output"
+echo "	-S      Start tracking files with entr; showes errror outupt"
+echo "	-a      opens a read line to add a single file to .tracker"
+echo "	-A      same as -a but allows for multil line input once you type % the list is over"
+echo "	-e	Edit .tracker file in current directory name master .mom"
+echo "	-l 	List tracked files"
+echo "	-x 	Kill any actave entr processes"
+echo "	-g 	Generate a pdf from data in .tracker file"
+echo "	-G	Generate a pdf without surpressing output"
+echo "	-r	Remove .tracker file from current directory"
+echo "	-I	Import file list"
+echo "	-R	remove backup file from current directory"
+echo "	-E	Export file list"
+echo "	-i 	Initialise directory by createing a .tracker file  and setting main file to track"
+echo "	-h 	Prints this message"
 echo
-echo "	Note:		When you initialise the script, the file you want to track must remain on the bottom of the tracking list or the script will break"
+echo "		Note:	When you initialise the script, the file you want to track must remain on the bottom of the tracking list or the script will break"
+echo "		use the -a or -A option for a simple way to do this"
 echo
 }
-add_module () {
-#echo "what module do you want to add"
-#echo "1) pdfmom"
-#echo "2) pdflatex"
-#read modanswer
-modanswer=1
-case $modanswer in
-	1) cp $HOME/.scripts/tracker\ modules/pdfmom ./.tracker && sh .tracker i ;;
-#	2) cp $HOME/.scripts/tracker\ modules/pdflatex ./.tracker && sh .tracker i $name ;;
-esac
-}
+
 no_tracker_file_error () {
 echo "no .tracker file existes in the current directory. Please create one with the -i <file> option"
 }
-while getopts "saelxtgEIRirvh" arg; do
-case $arg in
-#start tracker
-	s) [ -e .tracker ] && sh "$initial_dir/.tracker" s || no_tracker_file_error;;
-#Edit tracker
-	e) [ -e .tracker ] && sh "$initial_dir/.tracker" e || no_tracker_file_error;;
-#Add Directory
-	a) [ -e .tracker ] && sh "$initial_dir/.tracker" a || no_tracker_file_error ;;
-#List Files
-	l) [ -e .tracker ] && sh "$initial_dir/.tracker" l || no_tracker_file_error;;
-#stop entr
-	x) killall entr ;;
-#generate pdf
-	g) [ -e .tracker ] && sh "$initial_dir/.tracker" g || no_tracker_file_error ;;
-#Generate troubleshooting pdf
-	t) [ -e .tracker ] && sh "$initial_dir/.tracker" t || no_tracker_file_error ;;
-#Export file list
-	E) [ -e .tracker ] && sh "$initial_dir/.tracker" E || no_tracker_file_error ;; 
-#Import file list
-## Modify import so it'll auto gen base file
-	I) [ -e backuptr  ] && sh "$initial_dir/.tracker" I || echo "No backuptr file existes in current directory" ;;
-#Remove Backup file
-	R) [ -e backuptr ] && echo "delete backup file? y/n" && read answer && 
-if [[ $answer == "y" ]]; then
-	rm backuptr
-else
-	exit 0
-	fi 
-	;;
-#initiate file tracking
-	i) [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option or the -E opiton to export it's contents" || add_module;;
-	r) [ -e .tracker ] && echo "remove .tracker file in current directory y/n"&& read answer &&
-	       	if [[ $answer == "y" ]]; then
-		       	rm .tracker; 
+
+remove_tracker_file () {
+        echo "realy remove .tracker file y/n"
+		local answer
+		read answer
+		if [[ $answer == "y" ]]; then
+			rm .tracker
 		else
+			exit 0
+		fi
+}
+
+remove_backup_file () {
+        echo "realy remove backuptr file y/n"
+        local answer
+        read answer
+        if [[ $answer == "y" ]]; then
+		      	rm backuptr
+	    else
 		       	exit 0
 		fi
-		;;
-	v) [ -e .tracker  ] && sh "$initial_dir/.tracker" v || no_tracker_file_error ;;
-	h | *) usage; exit 0;; 
-esac  
-done
+}
 
+entr_start_pdfmom () {
+. "$initdir"/.tracker
+	local pdfname=$(echo $FILENAME | cut -d"." -f1)
+	case $MODULE in
+	pdfmom) pgrep entr > /dev/null && killall entr;  echo -e "${FILES[@]}" | sort | entr pdfmom "$FILENAME" > "$pdfname".pdf 2> /dev/null & ;;
+	esac
+}
+
+entr_start_pdfmom_error () {
+. "$initdir"/.tracker
+	local pdfname=$(echo $FILENAME | cut -d"." -f1)
+	case $MODULE in
+	pdfmom) pgrep entr > /dev/null && killall entr;  echo -e "${FILES[@]}" | sort | entr pdfmom "$FILENAME" > "$pdfname".pdf & ;;
+	esac
+}
+
+gen_pdf_pdfmom_no_error () {
+. "$initdir"/.tracker
+	local pdfname=$(echo $FILENAME | cut -d"." -f1)
+	pdfmom "$FILENAME" > "$pdfname".pdf 2> /dev/null
+}
+
+gen_pdf_pdfmom () {
+. "$initdir"/.tracker
+	local pdfname=$(echo $FILENAME | cut -d"." -f1)
+	pdfmom "$FILENAME" > "$pdfname".pdf
+}
+
+edit_tracked_files () {
+unspool_tracker && vim temp && spool_tracker
+}
+
+append_tracked_files () {
+	local userinput
+	read userinput && unspool_tracker && echo $userinput > temp2 && cat temp >> temp2 && vim temp2 && mv temp2 temp &&  spool_tracker
+}
+
+append_tracked_files_multi () {
+    local userinput
+    read -d '%' userinput && unspool_tracker && echo -e "$userinput" > temp2 && cat temp >> temp2 && vim temp2 && mv temp2 temp && spool_tracker
+}
+
+list_tracked_files () {
+sed 's/#.*//;/^$/d;/^FILENAME="/,$d;s/\\n/\
+/g;/echo/,$d;s/FILES="//;s/"//' .tracker > temp && tac temp && rm temp
+}
+
+unspool_tracker () {
+sed 's/#.*//;/^$/d;/^FILENAME="/,$d;s/\\n/\
+/g;/echo/,$d;s/FILES="//;s/"//' .tracker > temp
+}
+
+spool_tracker () {
+. "${initdir}"/.tracker
+sed "s/^$FILENAME$/$FILENAME\"/" temp | awk '{printf "%s\\n", $0 }' | sed 's/"\\n/"/;s/^/FILES="/' >> temp2 && echo "" >> temp2
+tail -n+2 .tracker >> temp2
+sed "/^$/d" temp2 > temp
+mv temp .tracker
+rm temp2
+}
+
+export_tracked_files () {
+	unspool_tracker && mv temp backuptr && cat backuptr
+}
+
+initialise_tracker () {
+echo "Chose Module type"
+echo "1) pdfmom"
+local answer
+read answer
+case $answer in
+    1) printf %b "FILES=\"${1}\"\nFILENAME=\"${1}\"\nMODULE=\"pdfmom\"" > .tracker ;;
+esac
+}
+
+import_tracked_files () {
+cp backuptr temp && spool_tracker && list_tracked_files
+}
+
+main () {
+while getopts "sSaAelxGgEIRi:rvh" arg; do
+case $arg in
+s) [ -e .tracker ] && entr_start_pdfmom || no_tracker_file_error;;
+S) [ -e .tracker ] && entr_start_pdfmom_error || no_tracker_file_error;;
+a) [ -e .tracker ] && append_tracked_files || no_tracker_file_error ;;
+A) [ -e .tracker ] && append_tracked_files_multi || no_tracker_file_error;;
+e) [ -e .tracker ] && edit_tracked_files || no_tracker_file_error;;
+l) [ -e .tracker ] && list_tracked_files || no_tracker_file_error;;
+x) [ -e .tracker ] && killall entr || no_tracker_file_error;;
+G) [ -e .tracker ] && gen_pdf_pdfmom || no_tracker_file_error;;
+g) [ -e .tracker ] && gen_pdf_pdfmom_no_error || no_tracker_file_error;;
+E) [ -e .tracker ] && export_tracked_files || no_tracker_file_error;;
+I) [ -e .tracker ] && import_tracked_files || no_tracker_file_error;;
+R) [ -e .tracker ] && remove_backup_file || no_tracker_file_error;;
+i) [ -e .tracker ] && echo ".tracker file already exists, if you wish to remove it you can use the -r option or the -E opiton to export it's contents" || name=$OPTARG; initialise_tracker "${name}" ;;
+r) [ -e .tracker ] && echo "remove .tracker file in current directory y/n" && remove_tracker_file;;
+v) [ -e .tracker ] && . "$initdir"/.tracker; echo $MODULE || no_tracker_file_error;;
+h | *) usage; exit 0;;
+esac
+done
+}
+
+main "${@}"

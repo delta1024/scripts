@@ -1,3 +1,0 @@
-#!/bin/env bash
-
-groff -T pdf "$1" > /tmp/groffpreview.pdf && zathura /tmp/groffpreview.pdf 

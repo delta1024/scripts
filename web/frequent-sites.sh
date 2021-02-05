@@ -20,5 +20,5 @@ case $prompt in
         ;;
 esac
 if [ "$url" == $url ]; then
-   librewolf --new-window "$url"
+    brave "$url"
 fi

@@ -10,17 +10,17 @@ fi
 
 if [[ $1 == "set" ]]; then
 cd $HOME/Pictures/Wallpapers
-sxiv -rqot * > /tmp/wallpapers
-   if [ "$(wc -l < /tmp/wallpapers)" == 0 ]; then
-   rm /tmp/wallpapers
+sxiv -rqot * > TEMP
+   if [ "$(wc -l < TEMP)" == 0 ]; then
+   rm $HOME/Pictures/Wallpapers/TEMP
    fi
-   if [ "$(wc -l < /tmp/wallpapers)" == 1 ]; then
-    sxiv -rqot * >> /tmp/wallpapers
-    mv /tmp/wallpapers .background
+   if [ "$(wc -l < TEMP)" == 1 ]; then
+    sxiv -rqot * >> TEMP
+    mv TEMP .background
     $HOME/.scripts/wallpaper.sh draw
    fi
-   if [ "$(wc -l < /tmp/wallpapers)" == 2 ]; then
-      mv /tmp/wallpapers .background
+   if [ "$(wc -l < TEMP)" == 2 ]; then
+      mv TEMP .background
       $HOME/.scripts/wallpaper.sh draw
    fi
 

@@ -1,5 +1,5 @@
 #!/bin/env bash
 url=$(dmenu -p "url: " <&-)
 if [ "$url" == $url ]; then
-brave $url
+librewolf --new-window $url
 fi

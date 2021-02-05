@@ -7,7 +7,7 @@ case "$prompt" in
     query=$(dmenu -p "Youtube Search: " <&-)
     query=${query// /%20}
     if [ "$query" == $query ]; then
-    brave "youtube.com/results?search_query=${query}"
+    librewolf --new-window "youtube.com/results?search_query=${query}"
     fi
 ;;
 
@@ -15,7 +15,7 @@ case "$prompt" in
     query=$(dmenu -p "ArchWiki: " <&-)
     query=${query// /_}
     if [ "$query" == $query ]; then
-    brave "https://wiki.archlinux.org/index.php/Special:Search/${query}"
+    librewolf --new-window "https://wiki.archlinux.org/index.php/Special:Search/${query}"
     fi
 ;;
 
@@ -23,7 +23,7 @@ case "$prompt" in
   query=$(dmenu -p "Proton DB: " <&-)
   query=${query// /%20}
   if [ "$query" == $query ]; then
-  brave "https://www.protondb.com/search?q=${query}"
+  librewolf --new-window "https://www.protondb.com/search?q=${query}"
   fi
 ;;
 esac
